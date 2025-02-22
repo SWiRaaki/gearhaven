@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/Gearhaven.dir/main.c.o -o Gearhaven  -lraylib -lm 
