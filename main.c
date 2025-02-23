@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include <stdio.h>
 
 int main(void)
 {
@@ -10,20 +11,38 @@ int main(void)
 	const int screenHeight = 450;
 
 	InitWindow(screenWidth, screenHeight, "Gearhaven");
+	//SetTargetFPS(60);
 
-	SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+	RenderTexture2D canvas = LoadRenderTexture(screenWidth, screenHeight);
 
-	while (!WindowShouldClose())    // Detect window close button or ESC key
+	while (!WindowShouldClose())
 	{
-		if ( IsKeyPressed( KEY_F5 ) )
+		if ( IsKeyPressed( KEY_F5 ) ) {
 			ToggleFullscreen();
+		}
 
-		BeginDrawing();
+		int width = screenWidth;
+		int height = screenHeight;
+
+		if ( IsWindowFullscreen() ) {
+			int monitor = GetCurrentMonitor();
+			width = GetMonitorWidth(monitor);
+			height = GetMonitorHeight(monitor);
+		};
+
+		BeginTextureMode(canvas);
 		ClearBackground(RAYWHITE);
 		BeginMode2D(cam);
-			DrawText( "Test text", 100, 100, 20, BLACK );
+		DrawText( "Test text", 100, 100, 20, BLACK );
 
 		EndMode2D();
+		EndTextureMode();
+
+		char debug[50] = { 0 };
+		sprintf( debug, "FPS: %d", GetFPS() );
+		BeginDrawing();
+		DrawTexturePro(canvas.texture, (Rectangle){0, 0, screenWidth, -screenHeight}, (Rectangle){0, 0, width, height}, (Vector2){0, 0}, 0, WHITE);
+		DrawText( debug, 0, 0, 11, BLACK );
 		EndDrawing();
 	}
 
