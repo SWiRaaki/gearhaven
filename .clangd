@@ -1,0 +1,4 @@
+CompileFlags:
+  Add: [-I./inc -Wall -Wextra -Wconversion -Wreturn-type -pedantic]
+  Compiler: gcc
+

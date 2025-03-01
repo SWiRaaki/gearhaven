@@ -1,52 +1,16 @@
-#include "raylib.h"
-#include <stdio.h>
+#include "gearhaven.h"
 
-int main(void)
+int main( void )
 {
-	Camera2D cam = {
-		0
-	};
-	cam.zoom = 1.f;
-	const int screenWidth = 800;
-	const int screenHeight = 450;
+	gh_init();
 
-	InitWindow(screenWidth, screenHeight, "Gearhaven");
-	//SetTargetFPS(60);
-
-	RenderTexture2D canvas = LoadRenderTexture(screenWidth, screenHeight);
-
-	while (!WindowShouldClose())
+	while ( gh_running() )
 	{
-		if ( IsKeyPressed( KEY_F5 ) ) {
-			ToggleFullscreen();
-		}
-
-		int width = screenWidth;
-		int height = screenHeight;
-
-		if ( IsWindowFullscreen() ) {
-			int monitor = GetCurrentMonitor();
-			width = GetMonitorWidth(monitor);
-			height = GetMonitorHeight(monitor);
-		};
-
-		BeginTextureMode(canvas);
-		ClearBackground(RAYWHITE);
-		BeginMode2D(cam);
-		DrawText( "Test text", 100, 100, 20, BLACK );
-
-		EndMode2D();
-		EndTextureMode();
-
-		char debug[50] = { 0 };
-		sprintf( debug, "FPS: %d", GetFPS() );
-		BeginDrawing();
-		DrawTexturePro(canvas.texture, (Rectangle){0, 0, screenWidth, -screenHeight}, (Rectangle){0, 0, width, height}, (Vector2){0, 0}, 0, WHITE);
-		DrawText( debug, 0, 0, 11, BLACK );
-		EndDrawing();
+		gh_update();
+		gh_draw();
 	}
 
-	CloseWindow();        // Close window and OpenGL context
+	gh_close();
 
 	return 0;
 }
