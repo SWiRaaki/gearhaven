@@ -57,3 +57,7 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+external/raylib/build/
+external/raylib/CMakeCache.txt
+external/raylib/CMakeFiles/
