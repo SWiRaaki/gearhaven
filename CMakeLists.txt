@@ -12,6 +12,7 @@ add_executable(
 	src/gearhaven.c
 	src/controls.c
 	src/camera.c
+	src/tileset.c
 )
 add_subdirectory(
 	external/raylib

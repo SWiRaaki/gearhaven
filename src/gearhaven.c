@@ -1,9 +1,11 @@
 #include "gearhaven.h"
 #include "camera.h"
 #include "controls.h"
+#include "tileset.h"
 
 #include <raylib.h>
 #include <raymath.h>
+#include <stdio.h>
 
 /// @brief Maximum length the debug string can be
 #define _DBG_MAX_LENGTH 50
@@ -18,12 +20,22 @@ i32  _dbg_line          = 0;
 /// @brief Internal flag to indicate that the game is running
 bool _running           = false;
 
+// Window size and display size will be cached and self-managed since fullscreen is janky in wsl debian
+
 /// @brief Rectangle representing the current game's resolution
 Rectangle _resolution   = { .x = .0f, .y = .0f, .width = .0f, .height = .0f };
 /// @brief Rectangle representing the current game's window
 Rectangle _window       = { .x = .0f, .y = .0f, .width = .0f, .height = .0f };
+/// @brief Rectangle representing the current game's display
+Rectangle _display      = { .x = .0f, .y = .0f, .width = .0f, .height = .0f };
+/// @brief Id of the current monitor
+i32 _monitor            = 0;
+
 /// @brief Resolution texture
 RenderTexture2D _canvas = { 0 };
+
+/// @brief Test tileset to test some functionalities including tilesets themself
+TileSet _ts_test;
 
 /**
  * @brief Add a debug string to the resolution independant post-draw screen
@@ -40,7 +52,7 @@ static void _addDebugInfo( char const * p_fmt, ... ) {
 	va_start( args, p_fmt );
 	
 	// Format the values into the debug string
-	vsnprintf( _dbg[_dbg_line++], _DBG_MAX_LENGTH, p_fmt, args ); 
+	vsnprintf( _dbg[_dbg_line++], _DBG_MAX_LENGTH, p_fmt, args );
 
 	// Close the list of parameters
 	va_end( args );
@@ -55,9 +67,8 @@ static void _toggleFullscreen( void ) {
 
 	if ( IsWindowFullscreen() ) { // Set window size to the monitor size in fullscreen
 		// get the current monitor handle
-		int mtr = GetCurrentMonitor();
-		_window.width  = (float)GetMonitorWidth( mtr );
-		_window.height = (float)GetMonitorHeight( mtr );
+		_window.width  = _display.width;
+		_window.height = _display.height;
 	} else {                      // Set window size to the resolution size in non-fullscreen
 		_window.width  = _resolution.width;
 		_window.height = _resolution.height;
@@ -76,6 +87,11 @@ void gh_init( void ) {
 	// Initialize the game window
 	InitWindow( (i32)_window.width, (i32)_window.height, "Gearhaven" );
 
+	// Set display
+	_monitor = GetCurrentMonitor();
+	_display.width  = (f32)GetMonitorWidth( _monitor );
+	_display.height = (f32)GetMonitorHeight( _monitor );
+
 	// Initialize target canvas for resolution specific rendering
 	_canvas = LoadRenderTexture( (i32)_window.width, (i32)_window.height );
 
@@ -87,6 +103,9 @@ void gh_init( void ) {
 	_toggleFullscreen();
 
 	_running = true;
+	_ts_test = gh_loadTileSet( "rsc/raw/Textures-16.png", 16, 16 );
+	// SetTextureFilter( _ts_test.texture, TEXTURE_FILTER_BILINEAR );
+	SetTextureWrap( _ts_test.texture, TEXTURE_WRAP_REPEAT );
 }
 
 void gh_update( void ) {
@@ -110,12 +129,17 @@ void gh_draw( void ) {
 		// Clear the background to a uniform color
 		ClearBackground( RAYWHITE );
 		// Start camera mode for the context using the games current camera
+		BeginScissorMode(0, 0, _resolution.width, _resolution.height );
 		BeginMode2D( gh_camera );
 			// Draw component modules
 			gh_drawCamera();
 			gh_drawControls();
+
+			// Draw custom components
+			gh_drawTile( &_ts_test, 3, 2, (Rectangle) { .0f, .0f, 128.f, 64.f } );
 		// Stop camera mode for the context
 		EndMode2D();
+		EndScissorMode();
 	// Close the context
 	EndTextureMode();
 

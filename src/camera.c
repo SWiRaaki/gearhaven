@@ -19,13 +19,13 @@ void gh_updateCamera( void ) {
 	Vector2 mov = { .x = .0f, .y = .0f };
 
 	// Check for the keys pressed and modify the movement delta accordingly
-	if ( IsKeyDown( gh_controls.cameraMoveUp ) )
-		mov.y -= 2.f;
-	if ( IsKeyDown( gh_controls.cameraMoveDown ) )
+	if ( IsKeyDown( gh_controls.cameraMoveUp ) || IsKeyDown( gh_controls_alt.cameraMoveUp ) )
 		mov.y += 2.f;
-	if ( IsKeyDown( gh_controls.cameraMoveLeft ) )
+	if ( IsKeyDown( gh_controls.cameraMoveDown ) || IsKeyDown( gh_controls_alt.cameraMoveDown ) )
+		mov.y -= 2.f;
+	if ( IsKeyDown( gh_controls.cameraMoveLeft ) || IsKeyDown( gh_controls_alt.cameraMoveLeft ) )
 		mov.x -= 2.f;
-	if ( IsKeyDown( gh_controls.cameraMoveRight ) )
+	if ( IsKeyDown( gh_controls.cameraMoveRight ) || IsKeyDown( gh_controls_alt.cameraMoveRight ) )
 		mov.x += 2.f;
 
 	// Add the movement delta to the cameras current target
